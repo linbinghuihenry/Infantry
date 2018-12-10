@@ -67,13 +67,13 @@ int yaw_zero = 4710;
 int pitch_zero = 370;
 #endif
 #ifdef INFANTRY_2
-fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(15.0, 0.02, 15, 10000.0, 10000.0, 10000.0, 6000.0);
+fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(12.0, 0.0, 10, 3000.0, 3000.0, 4000.0, 6000.0);
 //fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(200.0, 0.00, 0.5, 10000.0, 10000.0, 10000.0, 6000.0);
-fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(12.0, 0.01, 26, 10000.0, 10000.0, 10000.0, 6000.0);
-fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(10, 0.0, 15, 10000.0, 10000.0, 10000.0, 5000.0);
-fw_PID_Regulator_t yawSpeedPID = fw_PID_INIT(35.0, 0.0, 17, 10000.0, 10000.0, 10000.0, 5000.0);
+fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(10.0, 0.0, 15, 3000.0, 3000.0, 4000.0, 6000.0);
+fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(10, 0.0, 15, 3000.0, 10000.0, 4000.0, 5000.0);
+fw_PID_Regulator_t yawSpeedPID = fw_PID_INIT(20.0, 0.0, 17, 3000.0, 10000.0, 4000.0, 5000.0);
 int yaw_zero = 1260;
-int pitch_zero = 4970;
+int pitch_zero = 5970;
 #endif
 
 fw_PID_Regulator_t PLATEPositionPID = fw_PID_INIT(200.0, 0.0, 0.5, 10000.0, 10000.0, 10000.0, 8000.0);
@@ -411,7 +411,7 @@ void ControlPitch(void)
 			#endif
 			#ifdef INFANTRY_2
 			MINMAX(pitchAngleTarget, -15.0f, 30);
-			strange_coefficient_pitch_intensity = -1;
+			strange_coefficient_pitch_intensity = 1;
 			strange_coefficient_pitch_dir = -1;	
 			#endif			
 			if((autoBuffer[3] == 0xA6 || autoBuffer[3] == 0xA8) && (auto_aim))

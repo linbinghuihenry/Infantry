@@ -234,7 +234,7 @@ void RemoteControlProcess(Remote *rc)
 		
  		pitchAngleTarget += (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_PITCH_ANGLE_INC_FACT;
 		
-
+		/*ÁÖ±þ»Ô¸Ä
 		if(fabs(yawMotorAngle) <= 90)
 		{
 				yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT;
@@ -248,6 +248,26 @@ void RemoteControlProcess(Remote *rc)
 				if(fabs(AngleTarget_temp)<fabs(yawAngleTarget))
 					yawAngleTarget = AngleTarget_temp;
 		}
+		*/
+		
+		
+		///////////////
+		if(fabs(yawMotorAngle) <= 15)
+		{
+				yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT;
+		}
+			
+		
+			
+		else
+		{
+			AngleTarget_temp = yawAngleTarget;	
+			AngleTarget_temp   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT;
+			if((AngleTarget_temp - yawAngleTarget > 0 && yawMotorAngle < -15) || (AngleTarget_temp - yawAngleTarget < 0 && yawMotorAngle > 15))
+				yawAngleTarget = AngleTarget_temp;
+		}
+		///////////
+		
 		
 		if(rc->ch3 == 0x16C)
 		{
@@ -346,18 +366,19 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		{
 			pitchAngleTarget -= mouse->y * MOUSE_TO_PITCH_ANGLE_INC_FACT;  
 			//yawAngleTarget    -= mouse->x * MOUSE_TO_YAW_ANGLE_INC_FACT;
-		if(fabs(yawMotorAngle) <= 90)
+		if(fabs(yawMotorAngle) <= 15)
 		{
 				yawAngleTarget   -= mouse->x * MOUSE_TO_YAW_ANGLE_INC_FACT;
 		}
 			
-		AngleTarget_temp = yawAngleTarget;
+		
 			
-		if(fabs(yawMotorAngle) > 90 )
+		else
 		{
-				AngleTarget_temp   -= mouse->x * MOUSE_TO_YAW_ANGLE_INC_FACT;
-				if(fabs(AngleTarget_temp)<fabs(yawAngleTarget))
-					yawAngleTarget = AngleTarget_temp;
+			AngleTarget_temp = yawAngleTarget;
+			AngleTarget_temp   -= mouse->x * MOUSE_TO_YAW_ANGLE_INC_FACT;
+			if((AngleTarget_temp - yawAngleTarget > 0 && yawMotorAngle < -15) || (AngleTarget_temp - yawAngleTarget < 0 && yawMotorAngle > 15))
+				yawAngleTarget = AngleTarget_temp;
 		}
 
 			lastErrx = 0;
@@ -371,35 +392,35 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		forward_back_speed =  NORMAL_FORWARD_BACK_SPEED;
 		left_right_speed = NORMAL_LEFT_RIGHT_SPEED;
 		fbss = forward_back_speed;
-		if(key->v & 0x10)//Shift
-		{
-			going = 1;
-			forward_back_speed =  LOW_FORWARD_BACK_SPEED;
-			left_right_speed = LOW_LEFT_RIGHT_SPEED;
-			CM_current_LIMIT = CM_current_MAX_LOW*10;
-			int id = 0, pwm = 2400, time = 0;
-			char ServoMes[15];
-			sprintf(ServoMes, "#%03dP%04dT%04d!", id, pwm, time);
-			HAL_UART_Transmit(&SERVO_UART,(uint8_t *)&ServoMes, 15, 0xFFFF);
-		}
-		else 
-		{
-			going = 0;
-			CM_current_LIMIT = CM_current_MAX;
-			int id = 0, pwm = 500, time = 0;
-			char ServoMes[15];
-			sprintf(ServoMes, "#%03dP%04dT%04d!", id, pwm, time);
-			HAL_UART_Transmit(&SERVO_UART,(uint8_t *)&ServoMes, 15, 0xFFFF);
-		}
+//		if(key->v & 0x10)//Shift
+//		{
+//			going = 1;
+//			forward_back_speed =  LOW_FORWARD_BACK_SPEED;
+//			left_right_speed = LOW_LEFT_RIGHT_SPEED;
+//			CM_current_LIMIT = CM_current_MAX_LOW*10;
+//			int id = 0, pwm = 2400, time = 0;
+//			char ServoMes[15];
+//			sprintf(ServoMes, "#%03dP%04dT%04d!", id, pwm, time);
+//			HAL_UART_Transmit(&SERVO_UART,(uint8_t *)&ServoMes, 15, 0xFFFF);
+//		}
+//		else 
+//		{
+//			going = 0;
+//			CM_current_LIMIT = CM_current_MAX;
+//			int id = 0, pwm = 500, time = 0;
+//			char ServoMes[15];
+//			sprintf(ServoMes, "#%03dP%04dT%04d!", id, pwm, time);
+//			HAL_UART_Transmit(&SERVO_UART,(uint8_t *)&ServoMes, 15, 0xFFFF);
+//		}
 		if(key->v & 0x20)//Ctrl
 		{
-			burst = 1;
+			//burst = 1;
 //			forward_back_speed =  MIDDLE_FORWARD_BACK_SPEED;
 //			left_right_speed = MIDDLE_LEFT_RIGHT_SPEED;
 		}
 		else
 		{
-			burst = 0;
+			//burst = 0;
 //			forward_back_speed =  NORMAL_FORWARD_BACK_SPEED;
 //			left_right_speed = NORMAL_LEFT_RIGHT_SPEED;
 		}
@@ -453,11 +474,11 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		}
 		if(key->v & 0x80)	//key:e the chassis turn right 45 degree
 		{
-				if(shootdir > -45 && dircnt >= 30)
-			{
-				shootdir -= 45;
-				dircnt = 0;
-			}
+//				if(shootdir > -45 && dircnt >= 30)
+//			{
+//				shootdir -= 45;
+//				dircnt = 0;
+//			}
 //			setLaunchMode(SINGLE_MULTI);
 //			if(delayCnt>500)
 //			{
@@ -467,19 +488,19 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		}
 		if(key->v & 0x40)	//key:q the chassis turn left 45 degree
 		{
-			if(shootdir < 45 && dircnt >= 30)
-			{
-				shootdir += 45;
-				dircnt = 0;
-			}
+//			if(shootdir < 45 && dircnt >= 30)
+//			{
+//				shootdir += 45;
+//				dircnt = 0;
+//			}
 //			setLaunchMode(CONSTENT_4);
 		}
-		if(key->v & 0x200) //key:f
-		{
-			shootdir = 0;
-			adjustAutoy = 0;
-			adjustAutox = 0;
-		}
+//		if(key->v & 0x200) //key:f
+//		{
+//			shootdir = 0;
+//			adjustAutoy = 0;
+//			adjustAutox = 0;
+//		}
 		
 		if(key->v == 2048)//z
 		{
@@ -568,7 +589,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		
 		if(key->v == 256)  // key: r
 		{
-			cancel_chassis_rotate = 1;
+			//cancel_chassis_rotate = 1;
 		}
 		else
 		{
@@ -584,41 +605,41 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		}
 		if(key->v == 1056)//¬¦key: G+Ctrl
 		{
-			twist_state = 1;
+			//twist_state = 1;
 		}
 		if(key->v == 1040)  // key: G+Shift
 		{
-			twist_state = 0;
+			//twist_state = 0;
 		}
 
 		MouseShootControl(mouse,key);
-		if(RC_CtrlData.key.v == 1024)// G
-		{
-			LASER_ON();
-			zyRuneMode=8;
-			HAL_UART_Transmit(&MANIFOLD_UART , (uint8_t *)&littleRuneMSG, 4, 0xFFFF);
-			g_friction_wheel_state = FRICTION_WHEEL_ON;
-			friction_speed = 7000;
-			g_workState=RUNE_STATE;
-//			pitchAngleTarget = 0;
-//			yawAngleTarget = 0;
-//			yawAngleTarget = Location_Number[4].yaw_position;
-//			pitchAngleTarget = Location_Number[4].pitch_position;
-//			ShootOneBullet();
-		}else if(RC_CtrlData.key.v == 32768)// B
-		{
-			LASER_ON();
-			zyRuneMode=5;
-			HAL_UART_Transmit(&MANIFOLD_UART , (uint8_t *)&bigRuneMSG, 4, 0xFFFF);
-			g_friction_wheel_state = FRICTION_WHEEL_ON;
-			friction_speed = 7000;
-			g_workState=RUNE_STATE;
-//			pitchAngleTarget = 0;
-//			yawAngleTarget = 0;
-//			yawAngleTarget = Location_Number[4].yaw_position;
-//			pitchAngleTarget = Location_Number[4].pitch_position;
-//			ShootOneBullet();
-		}
+//		if(RC_CtrlData.key.v == 1024)// G
+//		{
+//			LASER_ON();
+//			zyRuneMode=8;
+//			HAL_UART_Transmit(&MANIFOLD_UART , (uint8_t *)&littleRuneMSG, 4, 0xFFFF);
+//			g_friction_wheel_state = FRICTION_WHEEL_ON;
+//			friction_speed = 7000;
+//			g_workState=RUNE_STATE;
+////			pitchAngleTarget = 0;
+////			yawAngleTarget = 0;
+////			yawAngleTarget = Location_Number[4].yaw_position;
+////			pitchAngleTarget = Location_Number[4].pitch_position;
+////			ShootOneBullet();
+//		}else if(RC_CtrlData.key.v == 32768)// B
+//		{
+//			LASER_ON();
+//			zyRuneMode=5;
+//			HAL_UART_Transmit(&MANIFOLD_UART , (uint8_t *)&bigRuneMSG, 4, 0xFFFF);
+//			g_friction_wheel_state = FRICTION_WHEEL_ON;
+//			friction_speed = 7000;
+//			g_workState=RUNE_STATE;
+////			pitchAngleTarget = 0;
+////			yawAngleTarget = 0;
+////			yawAngleTarget = Location_Number[4].yaw_position;
+////			pitchAngleTarget = Location_Number[4].pitch_position;
+////			ShootOneBullet();
+//		}
 	}
 	else if(GetWorkState() == RUNE_STATE)
 	{
